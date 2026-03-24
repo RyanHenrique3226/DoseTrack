@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,17 @@ public class MedicationService {
         medicationModel.setEndDate(LocalDate.now().plusDays(medicationModel.getTermDays() - 1));
 
         return repository.save(medicationModel);
+    }
+
+    public boolean isMedicationDay(MedicationModel model){
+        LocalDate today = LocalDate.now();
+        long validation = ChronoUnit.DAYS.between(model.getStartDate(), today);
+
+        if (today.isBefore(model.getStartDate()) || today.isAfter(model.getEndDate())){
+            return false;
+        }
+
+        return validation % model.getFrequency() == 0;
     }
 
 }
