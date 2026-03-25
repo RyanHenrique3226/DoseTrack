@@ -4,6 +4,7 @@ import com.ryan.DoseTrack.Model.Notification;
 import com.ryan.DoseTrack.Repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,15 @@ public class NotificationService {
             notification.setRead(true);
         }
         return repository.saveAll(notifications);
+    }
+
+    public void create(String message){
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setDateTime(LocalDateTime.now());
+        notification.setRead(false);
+
+        repository.save(notification);
     }
 
 }
