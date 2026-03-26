@@ -2,7 +2,9 @@ package com.ryan.DoseTrack.Service;
 
 import com.ryan.DoseTrack.Model.Notification;
 import com.ryan.DoseTrack.Repository.NotificationRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +24,7 @@ public class NotificationService {
     }
 
     public Notification updateReadById(long id){
-        Notification notification = repository.findById(id).orElseThrow(() -> new RuntimeException("Notifications not found"));
+        Notification notification = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notifications not found"));
 
         notification.setRead(true);
 

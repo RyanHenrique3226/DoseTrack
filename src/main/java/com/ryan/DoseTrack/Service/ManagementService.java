@@ -3,7 +3,11 @@ package com.ryan.DoseTrack.Service;
 import com.ryan.DoseTrack.Model.MedicationManagement;
 import com.ryan.DoseTrack.Model.MedicationModel;
 import com.ryan.DoseTrack.Repository.ManagementRepository;
+import com.ryan.DoseTrack.Repository.MedicationRepository;
+import com.ryan.DoseTrack.Rules.MedicationRules;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -12,18 +16,20 @@ import java.util.Optional;
 public class ManagementService {
 
     private final ManagementRepository repository;
-    private final MedicationService service;
+    private final MedicationRules rules;
+    private final MedicationRepository medicationRepository;
 
-    public ManagementService(ManagementRepository repository, MedicationService service) {
+    public ManagementService(ManagementRepository repository, MedicationRules rules, MedicationRepository medicationRepository) {
         this.repository = repository;
-        this.service = service;
+        this.rules = rules;
+        this.medicationRepository = medicationRepository;
     }
 
     public void markAsTaken(int id){
-        MedicationModel medication =  service.findById(id);
+        MedicationModel medication =  medicationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Medication Not Found"));
 
-        if (!service.isMedicationDay(medication)){
-            throw new RuntimeException("Today is not the day to take that medication.");
+        if (!rules.isMedicationDay(medication)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Today is not the day to take that medication.");
         }
 
         LocalDate today = LocalDate.now();
@@ -41,6 +47,10 @@ public class ManagementService {
             management.setStatus(true);
             repository.save(management);
         }
+    }
+
+    public void deleteByMedicationId(long id){
+        repository.deleteByMedicationModelId(id);
     }
 
     public boolean wasTaken(MedicationModel model){

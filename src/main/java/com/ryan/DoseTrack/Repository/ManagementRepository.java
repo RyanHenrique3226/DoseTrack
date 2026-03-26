@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface ManagementRepository extends JpaRepository <MedicationManagement, Long> {
     Optional<MedicationManagement> findByMedicationModelAndDate(MedicationModel medicationModel, LocalDate date);
+    void deleteByMedicationModelId(long medicationId);
 }

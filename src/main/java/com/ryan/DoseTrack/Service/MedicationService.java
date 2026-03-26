@@ -1,9 +1,11 @@
 package com.ryan.DoseTrack.Service;
 
+import com.ryan.DoseTrack.Model.MedicationManagement;
 import com.ryan.DoseTrack.Model.MedicationModel;
 import com.ryan.DoseTrack.Repository.MedicationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -15,8 +17,12 @@ import java.util.Optional;
 public class MedicationService {
 
     private final MedicationRepository repository;
+    private final ManagementService service;
 
-    public MedicationService(MedicationRepository repository) {this.repository = repository;}
+    public MedicationService(MedicationRepository repository, ManagementService service) {
+        this.repository = repository;
+        this.service = service;
+    }
 
     public MedicationModel createMedication(MedicationModel medicationModel){
         medicationModel.setStartDate(LocalDate.now());
@@ -34,9 +40,10 @@ public class MedicationService {
         return medication.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Medication not found"));
     }
 
+    @Transactional
     public void deleteById(int id){
         MedicationModel medicationModel = findById(id);
-
+        service.deleteByMedicationId(id);
         repository.delete(medicationModel);
     }
 
@@ -49,17 +56,6 @@ public class MedicationService {
         medicationModel.setEndDate(LocalDate.now().plusDays(medicationModel.getTermDays() - 1));
 
         return repository.save(medicationModel);
-    }
-
-    public boolean isMedicationDay(MedicationModel model){
-        LocalDate today = LocalDate.now();
-        long validation = ChronoUnit.DAYS.between(model.getStartDate(), today);
-
-        if (today.isBefore(model.getStartDate()) || today.isAfter(model.getEndDate())){
-            return false;
-        }
-
-        return validation % model.getFrequency() == 0;
     }
 
 }
