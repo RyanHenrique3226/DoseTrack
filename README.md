@@ -17,7 +17,20 @@ O sistema permite cadastrar tratamentos, definir frequência de uso e **verifica
 
 ---
 
-##  Funcionalidades
+## Arquitetura
+
+O projeto segue o padrão de arquitetura em camadas:
+
+- Controller: responsável pelas requisições HTTP
+- Service: regras de negócio
+- Repository: acesso ao banco de dados
+- Model: entidades da aplicação
+
+Essa separação garante melhor organização, manutenção e escalabilidade do sistema.
+
+---
+
+## Principais funcionalidades
 
 ###  Gerenciamento de medicamentos
 
@@ -117,7 +130,7 @@ O sistema permite cadastrar tratamentos, definir frequência de uso e **verifica
 
 A aplicação possui um processo automático utilizando `@Scheduled` que executa verificações periódicas.
 
-* Frequência: a cada 1 hora
+* Execução: a cada hora (entre 08:00 e 20:00)
 * Intervalo: das 08:00 às 20:00
 * Timezone: America/Recife
 
@@ -188,6 +201,7 @@ Além do gerenciamento básico, o sistema evolui para um modelo mais completo, i
 * Sistema de notificações
 
 A proposta é evoluir para uma aplicação capaz de **lembrar o usuário de tomar seus medicamentos de forma automática**, podendo futuramente integrar com serviços externos como WhatsApp ou e-mail.
+Este projeto também tem como foco a aplicação de boas práticas de desenvolvimento backend, como separação de responsabilidades, organização em camadas e automação de processos.
 
 ---
 
